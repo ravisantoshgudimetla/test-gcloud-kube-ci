@@ -15,3 +15,5 @@ script:
 - ./install_gcloud.sh
 - ./gcloud_sdk_configure.sh
 - ./gcloud_create_cluster.sh 
+- ./delete_cluster.sh
+
