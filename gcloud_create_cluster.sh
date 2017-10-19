@@ -5,9 +5,9 @@ kube_version=1.7.6
 
 create_cluster() {
 	gcloud compute instances create descheduler-$master_uuid --image="ubuntu-1704-zesty-v20171011" --image-project="ubuntu-os-cloud" --zone=us-east1-b
-        echo "gcloud compute instances delete descheduler-$master_uuid" > delete_cluster.sh
+        echo "gcloud compute instances delete descheduler-$master_uuid --quiet" > delete_cluster.sh
         gcloud compute instances create descheduler-$node_uuid --image="ubuntu-1704-zesty-v20171011" --image-project="ubuntu-os-cloud" --zone=us-east1-b
-	echo "gcloud compute instances delete descheduler-$node_uuid" >> delete_cluster.sh
+	echo "gcloud compute instances delete descheduler-$node_uuid --quiet" >> delete_cluster.sh
         chmod 755 delete_cluster.sh
 }
 
@@ -43,7 +43,7 @@ install_kube() {
 	# Copy this kubeadm_join_command to every node.
 	echo $kubeadm_join_command > kubeadm_join.sh
 	gcloud compute ssh descheduler-$node_uuid --command "sudo chmod 755 /tmp/kubeadm_preinstall.sh; sudo /tmp/kubeadm_preinstall.sh" --zone=us-east1-b
-	gcloud compute scp kubeadm_join.sh descheduler-$node_uuid:/tmp --zone=us-east1-b
+	gcloud compute copy_files kubeadm_join.sh descheduler-$node_uuid:/tmp --zone=us-east1-b
 	gcloud compute ssh descheduler-$node_uuid --command "sudo chmod 755 /tmp/kubeadm_join.sh; sudo /tmp/kubeadm_join.sh" --zone=us-east1-b
 
 }
