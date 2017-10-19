@@ -9,5 +9,5 @@ before_install:
 
 script:
 - ./install_gcloud.sh
-- exec -l $SHELL
+- export PATH=$PATH:$HOME/google-cloud-sdk/bin
 - ./gcloud_sdk_configure.sh
