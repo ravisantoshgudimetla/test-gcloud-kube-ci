@@ -10,3 +10,4 @@ before_install:
 script:
 - ./install_gcloud.sh
 - ./gcloud_sdk_configure.sh
+- ./gcloud_create_cluster.sh 
