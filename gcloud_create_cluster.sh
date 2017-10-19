@@ -43,7 +43,7 @@ install_kube() {
 	# Copy this kubeadm_join_command to every node.
 	echo $kubeadm_join_command > kubeadm_join.sh
 	gcloud compute ssh descheduler-$node_uuid --command "sudo chmod 755 /tmp/kubeadm_preinstall.sh; sudo /tmp/kubeadm_preinstall.sh" --zone=us-east1-b
-	gcloud compute copy_files kubeadm_join.sh descheduler-$node_uuid:/tmp --zone=us-east1-b
+	gcloud compute copy-files kubeadm_join.sh descheduler-$node_uuid:/tmp --zone=us-east1-b
 	gcloud compute ssh descheduler-$node_uuid --command "sudo chmod 755 /tmp/kubeadm_join.sh; sudo /tmp/kubeadm_join.sh" --zone=us-east1-b
 
 }
