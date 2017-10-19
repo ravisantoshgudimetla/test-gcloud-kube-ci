@@ -1,10 +1,14 @@
+sudo: required
+
 env:
    global:
    - PATH=$PATH:$TRAVIS_BUILD_DIR/google-cloud-sdk/bin
    - GCE_PROJECT_ID="citric-aleph-155112"
    - GCE_ZONE="us-east1-b"
    - GCE_SA_CREDS="$PWD/client.json"
+
 before_install:
+- sudo apt-get install -y uuid
 - openssl aes-256-cbc -K $encrypted_3a6a9b488437_key -iv $encrypted_3a6a9b488437_iv -in client.json.enc -out client.json -d
 
 script:
