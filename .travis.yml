@@ -3,7 +3,7 @@ sudo: required
 env:
    global:
    - PATH=$PATH:$TRAVIS_BUILD_DIR/google-cloud-sdk/bin
-   - GCE_PROJECT_ID="citric-aleph-155112"
+   - GCE_PROJECT_ID="openshift-descheduler-infra"
    - GCE_ZONE="us-east1-b"
    - GCE_SA_CREDS="$PWD/client.json"
 
