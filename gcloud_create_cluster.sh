@@ -16,7 +16,7 @@ generate_kubeadm_instance_files() {
 	# TODO: Check if they have come up. awk $6 contains the state(RUNNING or not).
 	master_public_ip=$(gcloud compute instances list | grep $master_uuid|awk '{print $5}')
 	node_public_ip=$(gcloud compute instances list | grep $node_uuid|awk '{print $5}')
-	echo "kubeadm init --kubernetes-version=${kube_version} --apiserver-advertise-address=${master_public_ip}" > kubeadm_install.sh
+	echo "kubeadm init --kubernetes-version=${kube_version} --apiserver-advertise-address=${master_public_ip}" --skip-preflight-checks> kubeadm_install.sh
 }
 
 
