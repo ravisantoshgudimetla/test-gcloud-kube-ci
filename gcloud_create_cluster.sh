@@ -10,7 +10,7 @@ create_cluster() {
         gcloud compute instances create descheduler-$node_uuid --image="ubuntu-1704-zesty-v20171011" --image-project="ubuntu-os-cloud" --zone=us-east1-b
 	echo "gcloud compute instances delete descheduler-$node_uuid --quiet" >> delete_cluster.sh
 	# Delete the firewall port created.
-	echo "gcloud compute firewall-rules delete kubeapiserver-$master_uuid" >> delete_cluster.sh
+	echo "gcloud compute firewall-rules delete kubeapiserver-$master_uuid --quiet" >> delete_cluster.sh
 	chmod 755 delete_cluster.sh
 }
 
