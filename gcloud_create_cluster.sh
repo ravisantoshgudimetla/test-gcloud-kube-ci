@@ -1,5 +1,6 @@
 master_uuid=$(uuid)
 node_uuid=$(uuid)
+kube_apiserver_port=6443
 kube_version=1.7.6
 
 
@@ -8,7 +9,9 @@ create_cluster() {
         echo "gcloud compute instances delete descheduler-$master_uuid --quiet" > delete_cluster.sh
         gcloud compute instances create descheduler-$node_uuid --image="ubuntu-1704-zesty-v20171011" --image-project="ubuntu-os-cloud" --zone=us-east1-b
 	echo "gcloud compute instances delete descheduler-$node_uuid --quiet" >> delete_cluster.sh
-        chmod 755 delete_cluster.sh
+	# Delete the firewall port created.
+	echo "gcloud compute firewall-rules delete kubeapiserver-$master_uuid" >> delete_cluster.sh
+	chmod 755 delete_cluster.sh
 }
 
 
@@ -29,14 +32,18 @@ transfer_install_files() {
 
 install_kube() {
 	# Docker installation.
-	gcloud compute ssh descheduler-$master_uuid --command "sudo apt-get update; sudo apt-get install -y docker.io" --zone=us-east1-b
-	gcloud compute ssh descheduler-$node_uuid --command "sudo apt-get update; sudo apt-get install -y docker.io" --zone=us-east1-b
+	gcloud compute ssh --dry-run descheduler-$master_uuid --command "sudo apt-get update; sudo apt-get install -y docker.io" --zone=us-east1-b
+	gcloud compute ssh --dry-run descheduler-$node_uuid --command "sudo apt-get update; sudo apt-get install -y docker.io" --zone=us-east1-b
 	# kubeadm installation.
 	# 1. Transfer files to master, nodes.
 	transfer_install_files
 	# 2. Install kubeadm.
 	#TODO: Add rm /tmp/kubeadm_install.sh
-	gcloud compute ssh descheduler-$master_uuid --command "sudo chmod 755 /tmp/kubeadm_preinstall.sh; sudo /tmp/kubeadm_preinstall.sh" --zone=us-east1-b	
+	# Open port for kube API server	
+	gcloud compute firewall-rules create kubeapiserver-$master_uuid --allow tcp:6443 --source-tags=descheduler-$master_uuid  --source-ranges=0.0.0.0/0 --description="Opening api server port" 
+
+	gcloud compute ssh descheduler-$master_uuid --command "sudo chmod 755 /tmp/kubeadm_preinstall.sh; sudo /tmp/kubeadm_preinstall.sh" --zone=us-east1-b
+	echo "Installed kubeadm"	
 	kubeadm_join_command=$(gcloud compute ssh descheduler-$master_uuid --command "sudo chmod 755 /tmp/kubeadm_install.sh; sudo /tmp/kubeadm_install.sh" --zone=us-east1-b|grep 'kubeadm join')
 	# Postinstall on master, need to add a network plugin for kube-dns to come to running state.
 	gcloud compute ssh descheduler-$master_uuid --command "sudo kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml --kubeconfig /etc/kubernetes/admin.conf" --zone=us-east1-b
@@ -52,7 +59,5 @@ install_kube() {
 create_cluster
 
 generate_kubeadm_instance_files
-
-#transfer_install_files()
 
 install_kube
