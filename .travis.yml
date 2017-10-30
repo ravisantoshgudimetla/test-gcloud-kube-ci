@@ -1,4 +1,4 @@
-#sudo: required
+sudo: required
 
 env:
    global:
@@ -15,5 +15,7 @@ script:
 - hack/e2e_gce/install_gcloud.sh
 - hack/e2e_gce/gcloud_sdk_configure.sh
 - hack/e2e_gce/gcloud_create_cluster.sh 
+
+after_install:
 - hack/e2e_gce/delete_cluster.sh #This will be created as part of gcloud_create_cluster.sh
 
