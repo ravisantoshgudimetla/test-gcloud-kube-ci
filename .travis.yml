@@ -12,8 +12,8 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_3a6a9b488437_key -iv $encrypted_3a6a9b488437_iv -in client.json.enc -out client.json -d
 
 script:
-- ./install_gcloud.sh
-- ./gcloud_sdk_configure.sh
-- ./gcloud_create_cluster.sh 
-- ./delete_cluster.sh
+- hack/e2e_gce/install_gcloud.sh
+- hack/e2e_gce/gcloud_sdk_configure.sh
+- hack/e2e_gce/gcloud_create_cluster.sh 
+- hack/e2e_gce/delete_cluster.sh #This will be created as part of gcloud_create_cluster.sh
 
